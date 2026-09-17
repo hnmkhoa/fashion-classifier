@@ -1,0 +1,36 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    environment:
+      MODEL_PATH: /app/artifacts/fashion_cnn.pt
+      CORS_ORIGINS: http://localhost:3000,http://127.0.0.1:3000
+      MAX_UPLOAD_BYTES: 5242880
+      MAX_IMAGE_PIXELS: 40000000
+    volumes:
+      - ./artifacts:/app/artifacts:ro
+    ports:
+      - "8765:8765"
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import json,urllib.request; data=json.load(urllib.request.urlopen('http://127.0.0.1:8765/health')); raise SystemExit(0 if data['model_ready'] else 1)"
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  web:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+      args:
+        VITE_API_URL: http://127.0.0.1:8765
+    ports:
+      - "3000:80"
+    depends_on:
+      api:
+        condition: service_healthy

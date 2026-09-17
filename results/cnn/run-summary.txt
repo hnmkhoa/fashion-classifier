@@ -1,0 +1,7 @@
+{
+  "model_version": "cnn-20260805T145058Z",
+  "best_epoch": 12,
+  "test_accuracy": 0.9193,
+  "test_macro_f1": 0.9188002286776771,
+  "checkpoint": "artifacts\\fashion_cnn.pt"
+}
